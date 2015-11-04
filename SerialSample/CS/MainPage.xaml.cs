@@ -172,10 +172,21 @@ namespace SerialSample
         {
             Task<UInt32> storeAsyncTask;
 
-            if (sendText.Text.Length != 0)
+            if (sendText.Text.Length != 0 || (bool)cbAppendNL.IsChecked)
             {
                 // Load the text from the sendText input text box to the dataWriter object
-                dataWriteObject.WriteString(sendText.Text);                
+                string text;
+                if ((bool)cbAppendNL.IsChecked)
+                {
+                    text = sendText.Text + '\n';
+
+                }
+                else
+                {
+                    text = sendText.Text;
+                }
+
+                dataWriteObject.WriteString(text);                
 
                 // Launch an async task to complete the write operation
                 storeAsyncTask = dataWriteObject.StoreAsync().AsTask();
@@ -262,7 +273,8 @@ namespace SerialSample
             UInt32 bytesRead = await loadAsyncTask;
             if (bytesRead > 0)
             {
-                rcvdText.Text = dataReaderObject.ReadString(bytesRead);
+                string intext = dataReaderObject.ReadString(bytesRead);
+                rcvdText.Text = intext;
                 status.Text = "bytes read successfully!";
             }            
         }
